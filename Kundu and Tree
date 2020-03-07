@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define intt long long
+
+intt pair3(intt n){
+    if(n<3) return 0;
+    intt ans=(n-2)*(n-1)*(n);
+    ans/=6;
+    return ans;
+}
+
+intt pair2(intt n){
+    if(n<2) return 0;
+    intt ans=n*(n-1);
+    return ans/2;
+}
+
+class Disjoint_set{
+    public:
+    intt N;
+    unordered_map<intt,intt> mydmap;
+    unordered_map<intt,intt> size;
+    void show(){
+        unordered_map<int,vector<int>> mymap;
+        for(auto a:mydmap) mymap[Find(a.second)].push_back(a.first);
+        for(auto a:mymap){
+            cout<<a.first<<" : size= "<<size[a.first]<<" :";
+            for(auto b:a.second) cout<<b<<" ";
+            cout<<endl;
+        }
+    }
+    void Union(intt s,intt d){
+        if(Find(s)!=Find(d)){
+            size[Find(s)]+=size[Find(d)];
+            mydmap[Find(d)]=Find(s);
+        }
+    }
+    intt Find(intt k){
+        if(mydmap[k]==k) return k;
+        mydmap[k]=Find(mydmap[k]);
+        return mydmap[k];
+    }
+    Disjoint_set(intt n){
+        N=n;
+        for(intt a=1;a<=n;a++){
+            mydmap[a]=a;
+            size[a]=1;
+        }
+    }
+    intt pair3b(){
+        intt ans=0;
+        for(intt a=1;a<=N;a++){
+            if(mydmap[a]==a) ans+=pair3(size[a]);
+        }
+        return ans;
+    }
+    intt pair2b(){
+        intt ans=0;
+        for(intt a=1;a<=N;a++){
+            if(mydmap[a]==a){
+                intt pairs=pair2(size[a]);
+                pairs*=(N-size[a]);
+                ans+=pairs;
+            }
+        }
+        return ans;
+    }
+};
+
+int main(){
+    intt n,s,d;
+    char color;
+    cin>>n;
+    Disjoint_set dset(n);
+    intt z=n-1;
+    while(z--){
+        cin>>s>>d>>color;
+        if(color=='b') dset.Union(s,d);
+    }
+    //dset.show();
+    intt k=pair3(n);
+    k-=dset.pair3b();
+    k-=dset.pair2b();
+    cout<<k%(1000000007)<<endl;
+    return 0;
+}
