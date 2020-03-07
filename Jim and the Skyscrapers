@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define intt long long
+
+void view(stack<intt> mystack){
+    cout<<endl<<" VIEW "<<endl;
+    while(!mystack.empty()){
+        cout<<mystack.top()<<" ";
+        mystack.pop();
+    }
+    cout<<endl;
+}
+
+intt fact(intt k){
+    if(k<=1) return 1;
+    return k*fact(k-1);
+}
+
+int main(){
+    intt n,ans=0;
+    cin>>n;
+    vector<intt> vec(n);
+    for(intt a=0;a<n;a++) cin>>vec[a];
+    stack<intt> mystack;
+    unordered_map<intt,intt> frq;
+    for(intt a=0;a<n;a++){
+        //cout<<a<<" ";
+        if(frq.find(vec[a])!=frq.end()) frq[vec[a]]++;
+        else frq[vec[a]]=1;
+        if(mystack.empty()){
+            mystack.push(a);
+            //view(mystack);
+            continue;
+        }
+        while(!mystack.empty() and vec[mystack.top()]<vec[a]){
+            frq[vec[mystack.top()]]=0;
+            mystack.pop();
+        }
+        if(!mystack.empty() and vec[mystack.top()]==vec[a]){
+            ans+=(frq[vec[a]]-1);
+        }
+        mystack.push(a);
+        //view(mystack);
+    }
+    //cout<<ans<<endl;
+    intt max=0,frqq=0;
+    while(!mystack.empty()){
+        if(mystack.top()>max){
+            max=mystack.top();
+            frqq=1;
+        }
+        else if(mystack.top()==max) frqq++;
+        mystack.pop();
+    }
+    ans+=(fact(frqq)/(fact(2)*fact(frqq-2)));
+    cout<<ans*2<<endl;
+    return 0;
+}
