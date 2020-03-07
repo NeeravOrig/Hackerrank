@@ -1,0 +1,515 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+class Move{
+    public:
+    vector<pair<int,int> > move;
+};
+
+char lower(char ch){
+    if(ch=='b' or ch=='B') return 'b';
+    if(ch=='W' or ch=='w') return 'w';
+    return '_';
+}
+
+bool valid(int a,int b,vector<vector<char> > &vec){
+    if(a>=0 and b>=0 and a<8 and b<8) return true;
+    return false;
+}
+
+pair<vector<Move>,bool> capture(vector<vector<char> > &vec,int a,int b){
+    if(a==0 and vec[a][b]=='w') vec[a][b]='W';
+    else if (a==7 and vec[a][b]=='b') vec[a][b]='B';
+    vector<Move> answer;
+    if(vec[a][b]=='w'){
+        if(valid(a-1,b-1,vec) and lower(vec[a-1][b-1])=='b' and valid(a-2,b-2,vec) and vec[a-2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b-2));
+            char o=vec[a-1][b-1];
+            vec[a][b]='_';
+            vec[a-1][b-1]='_';
+            vec[a-2][b-2]='w';
+            auto mypair=capture(vec,a-2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='w';
+            vec[a-1][b-1]=o;
+            vec[a-2][b-2]='_';
+        }
+        if(valid(a-1,b+1,vec) and lower(vec[a-1][b+1])=='b' and valid(a-2,b+2,vec) and vec[a-2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b+2));
+            char o=vec[a-1][b+1];
+            vec[a][b]='_';
+            vec[a-1][b+1]='_';
+            vec[a-2][b+2]='w';
+            auto mypair=capture(vec,a-2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='w';
+            vec[a-1][b+1]=o;
+            vec[a-2][b+2]='_';
+        }
+        if(answer.size()>0) return make_pair(answer,true);
+        return make_pair(answer,false);
+    }
+    else if(vec[a][b]=='b'){
+        if(valid(a+1,b-1,vec) and lower(vec[a+1][b-1])=='w' and valid(a+2,b-2,vec) and vec[a+2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b-2));
+            char o=vec[a+1][b-1];
+            vec[a][b]='_';
+            vec[a+1][b-1]='_';
+            vec[a+2][b-2]='b';
+            auto mypair=capture(vec,a+2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='b';
+            vec[a+1][b-1]=o;
+            vec[a+2][b-2]='_';
+        }
+        if(valid(a+1,b+1,vec) and lower(vec[a+1][b+1])=='w' and valid(a+2,b+2,vec) and vec[a+2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b+2));
+            char o=vec[a+1][b+1];
+            vec[a][b]='_';
+            vec[a+1][b+1]='_';
+            vec[a+2][b+2]='b';
+            auto mypair=capture(vec,a+2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='b';
+            vec[a+1][b+1]=o;
+            vec[a+2][b+2]='_';
+        }
+        if(answer.size()>0) return make_pair(answer,true);
+        return make_pair(answer,false);
+    }
+    else if(vec[a][b]=='W'){
+        if(valid(a-1,b-1,vec) and lower(vec[a-1][b-1])=='b' and valid(a-2,b-2,vec) and vec[a-2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b-2));
+            char o=vec[a-1][b-1];
+            vec[a][b]='_';
+            vec[a-1][b-1]='_';
+            vec[a-2][b-2]='W';
+            auto mypair=capture(vec,a-2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='W';
+            vec[a-1][b-1]=o;
+            vec[a-2][b-2]='_';
+        }
+        if(valid(a-1,b+1,vec) and lower(vec[a-1][b+1])=='b' and valid(a-2,b+2,vec) and vec[a-2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b+2));
+            char o=vec[a-1][b+1];
+            vec[a][b]='_';
+            vec[a-1][b+1]='_';
+            vec[a-2][b+2]='W';
+            auto mypair=capture(vec,a-2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='W';
+            vec[a-1][b+1]=o;
+            vec[a-2][b+2]='_';
+        }    
+        if(valid(a+1,b-1,vec) and lower(vec[a+1][b-1])=='b' and valid(a+2,b-2,vec) and vec[a+2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b-2));
+            char o=vec[a+1][b-1];
+            vec[a][b]='_';
+            vec[a+1][b-1]='_';
+            vec[a+2][b-2]='W';
+            auto mypair=capture(vec,a+2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='W';
+            vec[a+1][b-1]=o;
+            vec[a+2][b-2]='_';
+        }
+        if(valid(a+1,b+1,vec) and lower(vec[a+1][b+1])=='b' and valid(a+2,b+2,vec) and vec[a+2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b+2));
+            char o=vec[a+1][b+1];
+            vec[a][b]='_';
+            vec[a+1][b+1]='_';
+            vec[a+2][b+2]='W';
+            auto mypair=capture(vec,a+2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='W';
+            vec[a+1][b+1]=o;
+            vec[a+2][b+2]='_';
+        }  
+        if(answer.size()>0) return make_pair(answer,true);
+        return make_pair(answer,false);        
+    }
+    else if(vec[a][b]=='B'){
+        if(valid(a-1,b-1,vec) and lower(vec[a-1][b-1])=='w' and valid(a-2,b-2,vec) and vec[a-2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b-2));
+            char o=vec[a-1][b-1];
+            vec[a][b]='_';
+            vec[a-1][b-1]='_';
+            vec[a-2][b-2]='B';
+            auto mypair=capture(vec,a-2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='B';
+            vec[a-1][b-1]=o;
+            vec[a-2][b-2]='_';
+        }
+        if(valid(a-1,b+1,vec) and lower(vec[a-1][b+1])=='w' and valid(a-2,b+2,vec) and vec[a-2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a-2,b+2));
+            char o=vec[a-1][b+1];
+            vec[a][b]='_';
+            vec[a-1][b+1]='_';
+            vec[a-2][b+2]='B';
+            auto mypair=capture(vec,a-2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='B';
+            vec[a-1][b+1]=o;
+            vec[a-2][b+2]='_';
+        }    
+        if(valid(a+1,b-1,vec) and lower(vec[a+1][b-1])=='w' and valid(a+2,b-2,vec) and vec[a+2][b-2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b-2));
+            char o=vec[a+1][b-1];
+            vec[a][b]='_';
+            vec[a+1][b-1]='_';
+            vec[a+2][b-2]='B';
+            auto mypair=capture(vec,a+2,b-2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            if(answer.size()==0) answer.push_back(initial);
+            vec[a][b]='B';
+            vec[a+1][b-1]=o;
+            vec[a+2][b-2]='_';
+        }
+        if(valid(a+1,b+1,vec) and lower(vec[a+1][b+1])=='w' and valid(a+2,b+2,vec) and vec[a+2][b+2]=='_'){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            initial.move.push_back(make_pair(a+2,b+2));
+            char o=vec[a+1][b+1];
+            vec[a][b]='_';
+            vec[a+1][b+1]='_';
+            vec[a+2][b+2]='B';
+            auto mypair=capture(vec,a+2,b+2);
+            if(mypair.second){
+                for(auto k:mypair.first){
+                    Move newone=initial;
+                    answer.push_back(newone);
+                    answer.back().move.insert(answer.back().move.end(),k.move.begin()+1,k.move.end());
+                }
+            }
+            else{
+                answer.push_back(initial);
+            }
+            vec[a][b]='B';
+            vec[a+1][b+1]=o;
+            vec[a+2][b+2]='_';
+        }
+        if(answer.size()>0) return make_pair(answer,true);
+        return make_pair(answer,false);        
+    }
+    return make_pair(answer,false);    
+}
+
+char turn(bool chance){
+    if(chance) return 'w';
+    return 'b';
+}
+
+vector<Move> capture_moves(vector<vector<char> > &vec,bool chance){
+    vector<Move> answer;
+    for(int a=0;a<vec.size();a++){
+        for(int b=0;b<vec[a].size();b++){
+            pair<vector<Move>,bool> mypair;
+            if(lower(vec[a][b])==turn(chance)){
+            mypair=capture(vec,a,b);
+            if(mypair.second)
+            answer.insert(answer.end(),mypair.first.begin(),mypair.first.end());
+            }
+        }
+    }
+    return answer;
+}
+
+vector<Move> all_moves(vector<vector<char> >&vec,bool chance){
+    vector<Move> answer;
+    for(int a=0;a<8;a++){
+        for(int b=0;b<8;b++){
+            Move initial;
+            initial.move.push_back(make_pair(a,b));
+            if(chance){
+                if(vec[a][b]=='w' or vec[a][b]=='W'){
+                    if(valid(a-1,b-1,vec) and vec[a-1][b-1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a-1,b-1));
+                    }
+                    if(valid(a-1,b+1,vec) and vec[a-1][b+1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a-1,b+1));
+                    }
+                }
+                if(vec[a][b]=='W'){
+                    if(valid(a+1,b-1,vec) and vec[a+1][b-1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a+1,b-1));
+                    }
+                    if(valid(a+1,b+1,vec) and vec[a+1][b+1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a+1,b+1));
+                    }
+                }
+            }
+            else{
+                if(vec[a][b]=='b' or vec[a][b]=='B'){
+                    if(valid(a+1,b-1,vec) and vec[a+1][b-1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a+1,b-1));
+                    }
+                    if(valid(a+1,b+1,vec) and vec[a+1][b+1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a+1,b+1));
+                    }
+                }
+                if(vec[a][b]=='B'){
+                    if(valid(a-1,b+1,vec) and vec[a-1][b+1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a-1,b+1));
+                    }
+                    if(valid(a-1,b-1,vec) and vec[a-1][b-1]=='_'){
+                        Move ins=initial;
+                        answer.push_back(ins);
+                        answer.back().move.push_back(make_pair(a-1,b-1));
+                    }
+                }
+            }
+        }
+    }
+    return answer;
+}
+
+void cap_play(vector<pair<int,int> > &move,vector<vector<char> >&vec){
+    int x=move[0].first;
+    int y=move[0].second;
+    char o=vec[x][y];
+    vec[x][y]='_';
+    for(int a=1;a<move.size();a++){
+        int x2=move[a].first;
+        int y2=move[a].second;
+        int xa=(x+x2)/2;
+        int ya=(y+y2)/2;
+        vec[xa][ya]='_';
+        vec[x2][y2]=o;
+    }
+}
+
+void play(vector<pair<int,int> >&move,vector<vector<char> >&vec){
+    int x1,x2,y1,y2;
+    x1=move[0].first;
+    y1=move[0].second;
+    x2=move[1].first;
+    y2=move[1].second;
+    vec[x2][y2]=vec[x1][y1];
+    vec[x1][y1]='_';
+}
+
+int huristic(vector<vector<char> >&vec,bool chance){
+    int w=0,b=0,kill=0;
+    for(int a=0;a<vec.size();a++){
+        for(int b=0;b<vec[a].size();b++){
+            if(vec[a][b]=='w') w++;
+            else if(vec[a][b]=='W') w+=2;
+            else if(vec[a][b]=='b') b++;
+            else if(vec[a][b]=='B') b+=2;
+        }
+    }
+    vector<Move> cap_moves=capture_moves(vec,chance);
+    for(auto a:cap_moves) if(a.move.size()>kill) kill=a.move.size();
+    if(chance) return w-b+kill;
+    return w-b-kill;
+}
+
+int MinMaxprune(vector<vector<char> >&vec,bool chance,int alpha,int beta,int depth){
+    if(depth==0) return huristic(vec,chance);
+    auto orig=vec;
+    vector<Move> cap_moves=capture_moves(vec,chance);
+    if(cap_moves.size()>0){
+        for(auto a:cap_moves){
+            cap_play(a.move,vec);
+            int z=MinMaxprune(vec,!chance,alpha,beta,depth-1);
+            if(chance and z>beta) return z;
+            else if(!chance and alpha>z) return z;
+            if(z<beta) beta=z;
+            if(z>alpha) alpha=z;
+            vec=orig;
+        }
+        if(chance) return alpha;
+        return beta;
+    }
+    else{
+        vector<Move> moves=all_moves(vec,chance);
+        for(auto a:moves){
+            play(a.move,vec);
+            int z=MinMaxprune(vec,!chance,alpha,beta,depth-1);
+            if(chance and z>beta) return z;
+            else if(!chance and alpha>z) return z;
+            if(z<beta) beta=z;
+            if(z>alpha) alpha=z;
+            vec=orig;
+        }
+        if(chance) return alpha;
+        return beta;
+    }
+    return huristic(vec,chance);
+}
+
+vector<pair<int,int> > Best_Move(vector<vector<char> > &vec,bool chance){
+    int alpha=-999999,beta=999999,z;
+    auto orig=vec;
+    Move ans_max,ans_min;
+    vector<Move> cap_moves=capture_moves(vec,chance);
+    if(cap_moves.size()>0){
+        for(auto a:cap_moves){
+            cap_play(a.move,vec);
+            z=MinMaxprune(vec,!chance,alpha,beta,5);
+            if(z>alpha){ alpha=z; ans_max=a;}
+            if(z<beta){beta=z; ans_min=a;}
+            vec=orig;
+        }
+        if(chance) return ans_max.move;
+        return ans_min.move;
+    }
+    else{
+        vector<Move> moves=all_moves(vec,chance);
+        for(auto a:moves){
+            play(a.move,vec);
+            z=MinMaxprune(vec,!chance,alpha,beta,5);
+            if(z>alpha){alpha=z; ans_max=a;}
+            if(z<beta){ beta=z; ans_min=a;}
+            vec=orig;
+        }
+        if(chance) return ans_max.move;
+        return ans_min.move;
+    }
+}
+
+int main() {
+    int k;
+    vector<vector<char> > vec(8,vector<char>(8));
+    char ch;
+    cin>>ch;
+    cin>>k;
+    for(int a=0;a<k;a++)
+    for(int b=0;b<k;b++) cin>>vec[a][b];
+    vector<pair<int,int> > move;
+    if(ch=='w') move=Best_Move(vec,true);
+    else move=Best_Move(vec,false);
+    cout<<move.size()-1<<endl;
+    for(auto a:move){
+        cout<<a.first<<" "<<a.second<<endl;
+    }
+    return 0;
+}
