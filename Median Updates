@@ -1,0 +1,95 @@
+#include <map>
+#include <set>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <bitset>
+#include <cstdio>
+#include <limits>
+#include <vector>
+#include <cstdlib>
+#include <numeric>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+/* Head ends here */
+
+#include <iomanip>
+#define intt long long int
+
+long double pm=0;
+
+void print_median(multiset<intt> &minset,multiset<intt,greater<intt> > &maxset){
+    long double median;
+    if((intt)maxset.size()-(intt)minset.size()>1){
+        int z=*maxset.begin();
+        minset.insert(z);
+        maxset.erase(maxset.begin());
+    }
+    else if((intt)minset.size()-(intt)maxset.size()>1){
+        intt z=*minset.begin();
+        maxset.insert(z);
+        minset.erase(minset.begin());
+    }
+    if(minset.size()>maxset.size()) median=*minset.begin();
+    else if(maxset.size()>minset.size()) median=*maxset.begin();
+    else if(minset.size()==maxset.size()){
+        median=*minset.begin()+*maxset.begin();
+        median/=2;
+    }
+    pm=median;
+    if(median==(intt)median) cout<<(intt)median<<endl;
+    else cout<<fixed<<setprecision(1)<<median<<endl;
+}
+
+int main()
+{
+    intt n;
+    cin>>n;
+    multiset<intt> minset;
+    multiset<intt,greater<intt> > maxset;
+    while(n--){
+        char ch;
+        cin>>ch;
+        if(ch=='a'){
+            intt k;
+            cin>>k;
+            if(k<pm) maxset.insert(k);
+            else minset.insert(k);
+            print_median(minset,maxset);   
+        }
+        else if(ch=='r'){
+            intt k;
+            cin>>k;
+            bool found=true;
+            if(maxset.find(k)==maxset.end()&&minset.find(k)==minset.end())
+            {
+                cout<<"Wrong!"<<endl;
+                continue;
+            }
+            if(k<=pm)
+            {
+                auto it=maxset.find(k);
+                if(it!=maxset.end())
+                    maxset.erase(it);
+                else found=false;
+            }
+            if(k>pm||(k==pm&&!found))
+            {
+                auto it=minset.find(k);
+                minset.erase(it);
+                found=true;
+            }
+            if(maxset.size()+minset.size()==0){
+                cout<<"Wrong!"<<endl;
+                continue;
+            }
+            print_median(minset,maxset);
+        }
+    }
+    return 0;
+}
