@@ -1,0 +1,64 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define intt long long
+
+void view(stack<int> mystack){
+    while(!mystack.empty()){
+        cout<<mystack.top()<<" ";
+        mystack.pop();
+    }
+    cout<<endl;
+}
+
+int main(){
+    intt n;
+    cin>>n;
+    vector<intt> vec(n);
+    for(intt a=0;a<n;a++) cin>>vec[a];
+    stack<intt> mystack;
+    vector<intt> left(n),right(n);
+    for(intt a=0;a<n;a++){
+        if(mystack.empty()){
+            mystack.push(a);
+            //view(mystack);
+            continue;
+        }
+        while(!mystack.empty() and vec[mystack.top()]<vec[a]){
+            right[mystack.top()]=a+1;
+            mystack.pop();
+        }
+        mystack.push(a);
+        //view(mystack); 
+    }
+    while(!mystack.empty()){
+        right[mystack.top()]=0;
+        mystack.pop();
+    }
+    for(int a=n-1;a>=0;a--){
+        if(mystack.empty()){
+            mystack.push(a);
+            //view(mystack); 
+            continue;
+        }
+        while(!mystack.empty() and vec[mystack.top()]<vec[a]){
+            left[mystack.top()]=a+1;
+            mystack.pop();
+        }
+        mystack.push(a);
+        //view(mystack); 
+    }
+    while(!mystack.empty()){
+        left[mystack.top()]=0;
+        mystack.pop();
+    }/*
+    for(auto a:left) cout<<a<<" ";
+    cout<<endl;
+    for(auto a:right) cout<<a<<" ";
+    cout<<endl;*/
+    intt max=0;
+    for(intt a=0;a<n;a++){
+        if(right[a]*left[a]>max) max=right[a]*left[a];
+    }
+    cout<<max<<endl;
+    return 0;
+}
