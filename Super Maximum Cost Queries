@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define intt long long
+
+class Disjoint_set{
+    public:
+    unordered_map<intt,intt> mydmap;
+    unordered_map<intt,intt> size;
+    map<intt,intt> costpath;
+    void Union(intt s,intt d,intt cost){
+        if(Find(s)!=Find(d)){
+            if(costpath.find(cost)!=costpath.end())
+                costpath[cost]+=(size[Find(s)]*size[Find(d)]);
+            else
+                costpath[cost]=(size[Find(s)]*size[Find(d)]);    
+            size[Find(s)]+=size[Find(d)];
+            mydmap[Find(d)]=Find(s);
+        }
+    }
+    void preprocess(){
+        map<intt,intt> temp;
+        temp[costpath.begin()->first]=costpath.begin()->second;
+        auto itr=costpath.begin();
+        itr++;
+        auto prev=temp.begin();
+        while(itr!=costpath.end()){
+            temp[itr->first]=itr->second+prev->second;
+            prev++;
+            itr++;
+        }
+        costpath=temp;
+    }
+    intt Find(intt k){
+        if(mydmap[k]==k) return k;
+        mydmap[k]=Find(mydmap[k]);
+        return mydmap[k];
+    }
+    intt query(intt l,intt r){
+        intt ll=costpath.begin()->first;
+        auto up=costpath.end();
+        up--;
+        intt ul=up->first;
+        if(l>ul or r<ll) return 0;
+        intt ans=0,str,end;
+        auto start=costpath.lower_bound(l);
+        if(start==costpath.begin()) str=0;
+        else{
+            start--;
+            str=start->second;
+        }
+        auto last=costpath.upper_bound(r);
+        if(last->second==0){
+            last=costpath.end();
+            last--;
+            end=last->second;
+        }
+        else{
+            last--;
+            end=last->second;
+        }
+        return end-str;
+    }
+    Disjoint_set(intt n){
+        for(intt a=1;a<=n;a++){
+            mydmap[a]=a;
+            size[a]=1;
+        }
+    }
+};
+
+int main(){
+    intt n,q,s,d,c,l,r;
+    cin>>n>>q;
+    Disjoint_set dset(n);
+    vector<tuple<intt,intt,intt>> vec(n-1);
+    for(intt a=0;a<n-1;a++){
+        cin>>s>>d>>c;
+        vec[a]=make_tuple(c,s,d);
+    }
+    sort(vec.begin(),vec.end());
+    for(auto a:vec) dset.Union(get<1>(a),get<2>(a),get<0>(a));
+    dset.preprocess();
+    //for(auto a:dset.costpath) cout<<a.first<<" "<<a.second<<endl;
+    while(q--){
+        cin>>l>>r;
+        cout<<dset.query(l,r)<<endl;
+    }
+    return 0;
+}
